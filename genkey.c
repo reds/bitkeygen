@@ -93,11 +93,11 @@ uint8_t* calcECPubkey ( const EC_GROUP* group, BIGNUM* x, BIGNUM* y, const BIGNU
     exit(1);
   }
   memset ( scratch, 0, 64 );
-  if ( !BN_bn2bin ( x, scratch + BN_num_bytes(x) - 32 ) ) {
+  if ( !BN_bn2bin ( x, scratch + 32 - BN_num_bytes(x) ) ) {
     printf ( "error: converting x\n" );
     exit ( 2 );
   }
-  if ( !BN_bn2bin ( y, scratch + 32 + BN_num_bytes(y) - 32 ) ) {
+  if ( !BN_bn2bin ( y, scratch + 32 + 32 - BN_num_bytes(y) ) ) {
     printf ( "error: converting x\n" );
     exit ( 2 );
   }
