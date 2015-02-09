@@ -11,12 +11,8 @@
 #include <pthread.h>
 
 // bitcoin
-const int pubKeyVersion = 0;
-const int privKeyVersion = 128;
-
-// litecoin
-//const int pubKeyVersion = 48;
-//const int privKeyVersion = 176;
+int pubKeyVersion = 0;
+int privKeyVersion = 128;
 
 BIGNUM* B58;
 EC_GROUP* group;
@@ -96,19 +92,12 @@ uint8_t* calcECPubkey ( const EC_GROUP* group, BIGNUM* x, BIGNUM* y, const BIGNU
     printf ( "error %d\n", __LINE__ );
     exit(1);
   }
-  if ( BN_num_bytes(x) != 32 ) {
-    //    printf ( "error bad public key x (leading zeros?)\n" );
-    //    exit ( 2 );
-  }
-  if ( BN_num_bytes(y) != 32 ) {
-    //    printf ( "error bad public key y (leading zeros?)\n" );
-    //    exit ( 2 );
-  }
-  if ( !BN_bn2bin ( x, scratch ) ) {
+  memset ( scratch, 0, 64 );
+  if ( !BN_bn2bin ( x, scratch + BN_num_bytes(x) - 32 ) ) {
     printf ( "error: converting x\n" );
     exit ( 2 );
   }
-  if ( !BN_bn2bin ( y, scratch + 32 ) ) {
+  if ( !BN_bn2bin ( y, scratch + 32 + BN_num_bytes(y) - 32 ) ) {
     printf ( "error: converting x\n" );
     exit ( 2 );
   }
@@ -219,7 +208,6 @@ int main( int argc, char* argv[] ) {
   char* str = NULL;
   int anywhere = 0;
   int casesensitive = 0;
-  int litecoin = 0;
   int verbose = 0;
 
   int ch;
@@ -245,7 +233,8 @@ int main( int argc, char* argv[] ) {
       usage();
       break;
     case 'l':
-      litecoin = 1;
+      pubKeyVersion = 48;
+      privKeyVersion = 176;
       break;
     }
   }
